@@ -1501,20 +1501,9 @@
       }, 3600);
     }
 
-    function canUnlock(chapterKey) {
-      const target = SCHEDULE[chapterKey];
-      if (!target) return false;
-
-      const now = new Date();
-      const unlockAt = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        target.day,
-        target.hour,
-        target.minute,
-        0,
-        0
-      );
+   function canUnlock(chapterKey) {
+  return true;
+}
 
       return now >= unlockAt;
     }
