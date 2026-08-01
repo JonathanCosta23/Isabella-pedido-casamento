@@ -34,6 +34,27 @@ jobs:
           test -f index.html
           test -f final.html
           test -d assets
+      - name: Validate inline JavaScript with Node.js 24
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+
+          for (const file of ['index.html', 'final.html']) {
+            const html = fs.readFileSync(file, 'utf8');
+            const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)];
+
+            if (scripts.length === 0) {
+              throw new Error(`${file}: no inline JavaScript found`);
+            }
+
+            scripts.forEach((match, index) => {
+              new vm.Script(match[1], { filename: `${file}:inline-${index + 1}` });
+            });
+
+            console.log(`${file}: ${scripts.length} inline script(s) valid`);
+          }
+          NODE
       - name: Upload validation artifact
         uses: actions/upload-artifact@v7
         with:
